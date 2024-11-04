@@ -88,7 +88,7 @@ app.post('/api/users', (request, response) => {
     const newUser = { id: mockUsers[mockUsers.length - 1].id + 1, ...body };
     mockUsers.push(newUser);
     return response.status(201).send(newUser);
-});
+}); 
 
 app.get('/api/users/:id', resolveIndexByUserId, (request, response) => {
     const { findUserIndex } = request;
