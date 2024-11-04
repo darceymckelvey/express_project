@@ -2,11 +2,14 @@ import express from 'express';
 import { query, validationResult, body, matchedData, checkSchema } from 'express-validator';
 
 import { createUserValidationSchema } from './utils/validationSchemas.mjs';
+import usersRouter from './routes/users.mjs';
+import { mockUsers } from './utils/constants.mjs';
 
 const app = express();
 
 // middleware
 app.use(express.json());
+app.use(usersRouter);
 
 const loggingMiddleware = (request, response, next) => {
     console.log(`${request.method} - ${request.url}`);
@@ -30,39 +33,6 @@ const resolveIndexByUserId = (request, response, next) => {
 
 const PORT = process.env.PORT || 3000;
 
-const mockUsers = [
-        {
-            id: 1,
-            username: 'darceymckelvey',
-            displayName: "Darcey"
-        },
-        {
-            id: 2,
-            username: 'thunderclast',
-            displayName: "Thunder"
-        },
-        {
-            id: 3,
-            username: 'nightraven',
-            displayName: "Raven"
-        },
-        {
-            id: 4,
-            username: 'marilyn',
-            displayName: "Mary"
-        },
-        {
-            id: 5,
-            username: 'dustbringer',
-            displayName: "Dust"
-        },
-        {
-            id: 6,
-            username: 'Oysters',
-            displayName: "Oyster"
-        }
-    ]
-
 app.get(
     '/',
     (request, response, next) => { 
@@ -71,19 +41,6 @@ app.get(
      },
     (request, response) => {
     response.status(200).send({msg: "Hello world!"});
-});
-
-app.get('/api/users', query('filter').isString().notEmpty().withMessage('Must not be empty').isLength({min: 3, max: 10}).withMessage('Must be 3 to 10 chars'), (request, response) => {
-    const result = validationResult(request);
-    console.log(result);
-    const { query: {filter, value},
-    } = request;
-
-    if (filter && value) return response.send(
-        mockUsers.filter((user) => user[filter].includes(value))
-    ); 
-
-    return response.send(mockUsers);
 });
 
 app.post('/api/users', checkSchema(createUserValidationSchema), (request, response) => {
